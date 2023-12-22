@@ -1,7 +1,15 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
-
+import Navbar from "../../components/Navbar.js"
+import Footer from "../../components/Footer.js"
+import Head from 'next/head'
 const inter = Inter({ subsets: ['latin'] })
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
+import "primereact/resources/primereact.min.css";                  //core css
+// import "primeicons/primeicons.css";                                //icons
+ 
 
 export const metadata = {
   title: 'Create Next App',
@@ -11,7 +19,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <Head>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ 
+      </Head>
+      <body className={inter.className}>
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }
