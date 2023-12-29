@@ -10,8 +10,21 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Tag } from 'primereact/tag';
 import { TriStateCheckbox } from 'primereact/tristatecheckbox';
 import { CustomerService } from './CustomerService';
+import { Container } from 'react-bootstrap';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
 
 export default function BasicFilterDemo() {
+
+    const [visible, setVisible] = useState(false);
+    const footerContent = (
+        <div>
+            <Button label="cacel" icon="pi pi-times" onClick={() => setVisible(false)} className="p-button-text" />
+            <Button label="ok" icon="pi pi-check" onClick={() => setVisible(false)} autoFocus />
+        </div>
+    );
+
+
     const [customers, setCustomers] = useState(null);
     const [filters, setFilters] = useState({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -55,7 +68,19 @@ export default function BasicFilterDemo() {
                 return null;
         }
     };
-
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const countries = [
+        { name: 'Australia', code: 'AU' },
+        { name: 'Brazil', code: 'BR' },
+        { name: 'China', code: 'CN' },
+        { name: 'Egypt', code: 'EG' },
+        { name: 'France', code: 'FR' },
+        { name: 'Germany', code: 'DE' },
+        { name: 'India', code: 'IN' },
+        { name: 'Japan', code: 'JP' },
+        { name: 'Spain', code: 'ES' },
+        { name: 'United States', code: 'US' }
+    ];
     useEffect(() => {
         CustomerService.getCustomersMedium().then((data) => {
             setCustomers(getCustomers(data));
@@ -63,6 +88,25 @@ export default function BasicFilterDemo() {
         });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const selectedCountryTemplate = (option, props) => {
+        if (option) {
+            return (
+                <div className="flex align-items-center">
+                     <div>{option.name}</div>
+                </div>
+            );
+        }
+
+        return <span>{props.placeholder}</span>;
+    };
+
+    const countryOptionTemplate = (option) => {
+        return (
+            <div className="flex align-items-center">
+                 <div>{option.name}</div>
+            </div>
+        );
+    };
     const getCustomers = (data) => {
         return [...(data || [])].map((d) => {
             d.date = new Date(d.date);
@@ -86,7 +130,7 @@ export default function BasicFilterDemo() {
             <div className="flex justify-content-end">
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
-                    <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                    {/* <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" /> */}
                 </span>
             </div>
         );
@@ -162,10 +206,31 @@ export default function BasicFilterDemo() {
     const header = renderHeader();
 
     return (
-        <div className="card-pad">
+        <div className='pad-top'>
+
+            <Container>
+
+            <div className="  d-flex justify-content-center">
+            <Button   icon="pi pi-external-link" onClick={() => setVisible(true)}  className='btn-add'> +</Button>
+            <Dialog   visible={visible} style={{ width: '50vw' }} onHide={() => setVisible(false)} footer={footerContent}>
+             <div className="d-flex flex-column gap-2">
+                <label htmlFor="username">الاسم</label>
+                <InputText id="username" aria-describedby="username-help" />
+                
+         </div>
+            </Dialog>
+            </div>
+            <div className="card flex justify-content-center">
+            <Dropdown value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Select a Country" 
+                filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
+        </div>    
+    
+            </Container>
+
+          <div className="card-pad">
             <DataTable value={customers} paginator rows={10} dataKey="id" filters={filters} filterDisplay="row" loading={loading}
                     globalFilterFields={['name', 'country.name', 'representative.name', 'status']} header={header} emptyMessage="No customers found.">
-                <Column field="name" header="الموديل" filter  style={{ minWidth: '10rem' }} />
+                <Column field="name" header="الموديل" filter  style={{ minWidth: ' ' }} />
                 <Column header="نوع الشحن" filterField="country.name" style={{ minWidth: '10rem' }} body={countryBodyTemplate} filter   />
                 <Column header="نوع الشحن" filterField="country.name" style={{ minWidth: '10rem' }} body={countryBodyTemplate} filter     />
                 <Column header="  العنوان" filterField="country.name" style={{ minWidth: '10rem' }} body={countryBodyTemplate} filter  />
@@ -177,5 +242,6 @@ export default function BasicFilterDemo() {
  
              </DataTable>
         </div>
+      </div>
     );
 }
